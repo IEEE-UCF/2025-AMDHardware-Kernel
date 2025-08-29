@@ -1,0 +1,1 @@
+# pipeline state bindings (skeleton)

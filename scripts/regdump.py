@@ -1,0 +1,1 @@
+print('regdump skeleton')

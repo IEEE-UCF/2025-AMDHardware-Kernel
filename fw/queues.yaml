@@ -1,0 +1,3 @@
+rings:
+  - name: gfx0
+    size: 4096

@@ -1,0 +1,13 @@
+# Auto-gen source for mgpu_mmio.h (placeholders)
+version: 1
+blocks:
+  core:
+    VERSION: 0x0000
+    CAPS:    0x0004
+  queues:
+    DOORBELL_BASE: 0x0100
+  fence:
+    FENCE_COUNTER: 0x0200
+  instr_mem:
+    INSTR_MEM_BASE: 0x8000
+    INSTR_MEM_SIZE: 0x2000

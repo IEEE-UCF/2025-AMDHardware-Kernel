@@ -13,12 +13,25 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h>
 #include <linux/debugfs.h>
+#include <linux/delay.h>
 
 #include "mgpu_drm.h"
 #include "mgpu_regs.h"
+#include "mgpu_internal.h"h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/of_address.h>
+#include <linux/io.h>
+#include <linux/interrupt.h>
+#include <linux/dma-mapping.h>
+#include <linux/slab.h>
+#include <linux/cdev.h>
+#include <linux/fs.h>
+#include <linux/uaccess.h>
+#include <linux/debugfs.h>
 
-/*I am going to spam inline comments here for my sake*/
-/* THIS IS A PROTOTYPE */
+#include "mgpu_drm.h"
+#include "mgpu_regs.h"
 
 #define DRIVER_NAME "mgpu"
 #define DRIVER_DESC "Minimal GPU Driver for FPGA"
@@ -67,7 +80,7 @@ struct mgpu_device {
     struct class *class;
 };
 
-/* Global device pointer, single instance for MVP */
+/* Global device pointer - single instance for MVP */
 static struct mgpu_device *mgpu_dev;
 
 /* Register access helpers */
@@ -102,7 +115,7 @@ static irqreturn_t mgpu_irq_handler(int irq, void *arg)
     return IRQ_HANDLED;
 }
 
-/* IRQ Tasklet, bottom half */
+/* IRQ Tasklet - bottom half */
 static void mgpu_irq_tasklet_func(unsigned long data)
 {
     struct mgpu_device *mdev = (struct mgpu_device *)data;
@@ -113,13 +126,14 @@ static void mgpu_irq_tasklet_func(unsigned long data)
     if (status & MGPU_IRQ_CMD_COMPLETE) {
         /* Handle command completion */
         dev_dbg(mdev->dev, "Command complete\n");
-        /* TODO, Signal fence, wake waiters */
+        /* Signal fence processing */
+        mgpu_fence_process(mdev);
     }
     
     if (status & MGPU_IRQ_ERROR) {
         /* Handle errors */
         dev_err(mdev->dev, "GPU error detected\n");
-        /* TODO, Capture error state, trigger reset */
+        /* TODO: Capture error state, trigger reset */
     }
 }
 
@@ -149,8 +163,29 @@ static int mgpu_hw_init(struct mgpu_device *mdev)
         return -EIO;
     }
     
-    /* Initialize rings and queues */
-    /* TODO, Setup command rings */
+    /* Initialize command queue subsystem */
+    ret = mgpu_cmdq_init(mdev);
+    if (ret) {
+        dev_err(mdev->dev, "Failed to initialize command queues\n");
+        return ret;
+    }
+    
+    /* Initialize fence subsystem */
+    ret = mgpu_fence_init(mdev);
+    if (ret) {
+        dev_err(mdev->dev, "Failed to initialize fences\n");
+        mgpu_cmdq_fini(mdev);
+        return ret;
+    }
+    
+    /* Initialize shader manager */
+    ret = mgpu_shader_init(mdev);
+    if (ret) {
+        dev_err(mdev->dev, "Failed to initialize shader manager\n");
+        mgpu_fence_fini(mdev);
+        mgpu_cmdq_fini(mdev);
+        return ret;
+    }
     
     /* Enable interrupts */
     mgpu_write(mdev, MGPU_REG_IRQ_ENABLE, MGPU_IRQ_CMD_COMPLETE | MGPU_IRQ_ERROR);
@@ -169,6 +204,12 @@ static void mgpu_hw_fini(struct mgpu_device *mdev)
     
     /* Stop the device */
     mgpu_write(mdev, MGPU_REG_CONTROL, 0);
+    
+    /* Clean up subsystems */
+    mgpu_shader_fini(mdev);
+    mgpu_fence_fini(mdev);
+    mgpu_cmdq_fini(mdev);
+    mgpu_gem_cleanup(mdev);
     
     /* Reset */
     mgpu_write(mdev, MGPU_REG_CONTROL, MGPU_CTRL_RESET);
@@ -194,16 +235,140 @@ static long mgpu_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
     
     switch (cmd) {
     case MGPU_GET_INFO:
-        /* TODO, Return device info */
+        /* Return device info */
+        {
+            struct mgpu_info info = {
+                .version_major = MGPU_VERSION_MAJOR(mdev->version),
+                .version_minor = MGPU_VERSION_MINOR(mdev->version),
+                .version_patch = MGPU_VERSION_PATCH(mdev->version),
+                .capabilities = mdev->caps,
+                .num_engines = mdev->num_engines,
+                .num_queues = mdev->num_queues,
+                .max_width = 1920,
+                .max_height = 1080,
+                .max_threads = 256,
+                .memory_size = 64 * 1024 * 1024,  /* 64MB */
+                .shader_mem_size = 64 * 1024,     /* 64KB */
+            };
+            
+            if (copy_to_user((void __user *)arg, &info, sizeof(info)))
+                return -EFAULT;
+        }
         break;
+        
     case MGPU_BO_CREATE:
-        /* TODO, Create buffer object */
+        /* Create buffer object */
+        {
+            struct mgpu_bo_create args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            ret = mgpu_bo_create(mdev, &args);
+            if (ret)
+                return ret;
+            
+            if (copy_to_user((void __user *)arg, &args, sizeof(args)))
+                return -EFAULT;
+        }
         break;
+        
+    case MGPU_BO_DESTROY:
+        /* Destroy buffer object */
+        {
+            struct mgpu_bo_destroy args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            return mgpu_bo_destroy(mdev, &args);
+        }
+        break;
+        
+    case MGPU_BO_MMAP:
+        /* Get mmap offset for buffer object */
+        {
+            struct mgpu_bo_mmap args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            ret = mgpu_bo_mmap(mdev, &args, filp);
+            if (ret)
+                return ret;
+            
+            if (copy_to_user((void __user *)arg, &args, sizeof(args)))
+                return -EFAULT;
+        }
+        break;
+        
     case MGPU_SUBMIT:
-        /* TODO, Submit commands */
+        /* Submit commands */
+        {
+            struct mgpu_submit args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            return mgpu_submit_commands(mdev, &args);
+        }
         break;
+        
     case MGPU_WAIT_FENCE:
-        /* TODO, Wait for fence */
+        /* Wait for fence */
+        {
+            struct mgpu_wait_fence args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            return mgpu_wait_fence(mdev, &args);
+        }
+        break;
+        
+    case MGPU_LOAD_SHADER:
+        /* Load shader program */
+        {
+            struct mgpu_load_shader args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            return mgpu_load_shader(mdev, &args);
+        }
+        break;
+        
+    case MGPU_READ_REG:
+        /* Read register (debug) */
+        {
+            struct mgpu_reg_access args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            if (args.offset >= resource_size(mdev->mmio_res))
+                return -EINVAL;
+            
+            args.value = mgpu_read(mdev, args.offset);
+            
+            if (copy_to_user((void __user *)arg, &args, sizeof(args)))
+                return -EFAULT;
+        }
+        break;
+        
+    case MGPU_WRITE_REG:
+        /* Write register (debug) */
+        {
+            struct mgpu_reg_access args;
+            
+            if (copy_from_user(&args, (void __user *)arg, sizeof(args)))
+                return -EFAULT;
+            
+            if (args.offset >= resource_size(mdev->mmio_res))
+                return -EINVAL;
+            
+            mgpu_write(mdev, args.offset, args.value);
+        }
         break;
     default:
         return -EINVAL;
@@ -218,6 +383,7 @@ static const struct file_operations mgpu_fops = {
     .release = mgpu_release,
     .unlocked_ioctl = mgpu_ioctl,
     .compat_ioctl = mgpu_ioctl,
+    .mmap = mgpu_mmap,
 };
 
 /* Platform driver probe */
@@ -310,7 +476,7 @@ static int mgpu_probe(struct platform_device *pdev)
     /* Create debugfs entries */
     mdev->debugfs_root = debugfs_create_dir(DRIVER_NAME, NULL);
     if (!IS_ERR_OR_NULL(mdev->debugfs_root)) {
-        /* TODO, Add debugfs files */
+        /* TODO: Add debugfs files */
         debugfs_create_x32("version", 0444, mdev->debugfs_root, &mdev->version);
         debugfs_create_x32("caps", 0444, mdev->debugfs_root, &mdev->caps);
     }
@@ -318,7 +484,7 @@ static int mgpu_probe(struct platform_device *pdev)
     /* Run self-tests if requested */
     if (run_selftests) {
         dev_info(&pdev->dev, "Running self-tests...\n");
-        /* TODO, Run tests */
+        /* TODO: Run tests */
     }
     
     dev_info(&pdev->dev, "MGPU probe complete\n");

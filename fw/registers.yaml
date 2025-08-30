@@ -1,13 +1,114 @@
-# Auto-gen source for mgpu_mmio.h (placeholders)
-version: 1
-blocks:
-  core:
-    VERSION: 0x0000
-    CAPS:    0x0004
-  queues:
-    DOORBELL_BASE: 0x0100
-  fence:
-    FENCE_COUNTER: 0x0200
-  instr_mem:
-    INSTR_MEM_BASE: 0x8000
-    INSTR_MEM_SIZE: 0x2000
+mgpu:
+  registers:
+    base:
+      VERSION:       { offset: 0x0000, access: RO, desc: "Hardware version" }
+      CAPS:          { offset: 0x0004, access: RO, desc: "Capability flags" }
+      CONTROL:       { offset: 0x0008, access: RW, desc: "Main control register" }
+      STATUS:        { offset: 0x000C, access: RO, desc: "Status register" }
+      SCRATCH:       { offset: 0x0010, access: RW, desc: "Scratch register for testing" }
+
+    interrupt:
+      IRQ_STATUS:    { offset: 0x0020, access: RO, desc: "Interrupt status" }
+      IRQ_ENABLE:    { offset: 0x0024, access: RW, desc: "Interrupt enable mask" }
+      IRQ_ACK:       { offset: 0x0028, access: WO, desc: "Interrupt acknowledge" }
+
+    command_queue:
+      CMD_BASE:      { offset: 0x0040, access: RW, desc: "Command ring base address" }
+      CMD_SIZE:      { offset: 0x0044, access: RW, desc: "Command ring size" }
+      CMD_HEAD:      { offset: 0x0048, access: RW, desc: "Command ring head pointer" }
+      CMD_TAIL:      { offset: 0x004C, access: RO, desc: "Command ring tail pointer" }
+      CMD_DOORBELL:  { offset: 0x0050, access: WO, desc: "Command doorbell" }
+
+    fence:
+      FENCE_ADDR:    { offset: 0x0060, access: RW, desc: "Fence writeback address" }
+      FENCE_VALUE:   { offset: 0x0064, access: RO, desc: "Current fence value" }
+
+    vertex:
+      VERTEX_BASE:   { offset: 0x0080, access: RW, desc: "Vertex buffer base address" }
+      VERTEX_COUNT:  { offset: 0x0084, access: RW, desc: "Number of vertices" }
+      VERTEX_STRIDE: { offset: 0x0088, access: RW, desc: "Vertex stride in bytes" }
+
+    shader:
+      SHADER_PC:     { offset: 0x00A0, access: RW, desc: "Shader program counter" }
+      SHADER_ADDR:   { offset: 0x00A4, access: RW, desc: "Shader memory address" }
+      SHADER_DATA:   { offset: 0x00A8, access: RW, desc: "Shader memory data" }
+      SHADER_CTRL:   { offset: 0x00AC, access: RW, desc: "Shader control" }
+
+    instr_mem:
+      BASE:          { offset: 0x1000, desc: "Start of instruction memory window" }
+      SIZE:          { size:   0x1000, desc: "Instruction memory size (4KB)" }
+
+    doorbell:
+      BASE:          { offset: 0x2000, desc: "Start of doorbell region" }
+      DOORBELL(n):   { formula: "BASE + n*4" }
+
+  control_bits:
+    ENABLE:        { bit: 0, desc: "Enable GPU" }
+    RESET:         { bit: 1, desc: "Reset GPU" }
+    PAUSE:         { bit: 2, desc: "Pause execution" }
+    SINGLE_STEP:   { bit: 3, desc: "Single step mode" }
+    FLUSH_CACHE:   { bit: 4, desc: "Flush caches" }
+    PERF_COUNTER:  { bit: 5, desc: "Enable performance counters" }
+
+  status_bits:
+    IDLE:          { bit: 0, desc: "GPU is idle" }
+    BUSY:          { bit: 1, desc: "GPU is busy" }
+    ERROR:         { bit: 2, desc: "Error condition" }
+    HALTED:        { bit: 3, desc: "GPU halted" }
+    FENCE_DONE:    { bit: 4, desc: "Fence signaled" }
+    CMD_EMPTY:     { bit: 5, desc: "Command queue empty" }
+    CMD_FULL:      { bit: 6, desc: "Command queue full" }
+
+  irq_bits:
+    CMD_COMPLETE:  { bit: 0, desc: "Command completed" }
+    ERROR:         { bit: 1, desc: "Error occurred" }
+    FENCE:         { bit: 2, desc: "Fence reached" }
+    QUEUE_EMPTY:   { bit: 3, desc: "Queue became empty" }
+    SHADER_HALT:   { bit: 4, desc: "Shader halted" }
+    PERF_COUNTER:  { bit: 5, desc: "Performance counter overflow" }
+
+  caps_bits:
+    VERTEX_SHADER:    { bit: 0, desc: "Vertex shader support" }
+    FRAGMENT_SHADER:  { bit: 1, desc: "Fragment shader support" }
+    TEXTURE:          { bit: 2, desc: "Texture support" }
+    FLOAT16:          { bit: 3, desc: "FP16 support" }
+    FLOAT32:          { bit: 4, desc: "FP32 support" }
+    INT32:            { bit: 5, desc: "INT32 support" }
+    ATOMIC:           { bit: 6, desc: "Atomic operations" }
+    FENCE:            { bit: 7, desc: "Fence support" }
+    MULTI_QUEUE:      { bit: 8, desc: "Multiple queues" }
+    PREEMPTION:       { bit: 9, desc: "Preemption support" }
+
+  version_fields:
+    MAJOR_SHIFT: 24
+    MAJOR_MASK:  0xFF000000
+    MINOR_SHIFT: 16
+    MINOR_MASK:  0x00FF0000
+    PATCH_SHIFT: 8
+    PATCH_MASK:  0x0000FF00
+    BUILD_MASK:  0x000000FF
+
+  error_codes:
+    NONE:          0x00
+    INVALID_CMD:   0x01
+    MEM_FAULT:     0x02
+    SHADER_FAULT:  0x03
+    TIMEOUT:       0x04
+    OVERFLOW:      0x05
+
+  commands:
+    NOP:        0x00
+    DRAW:       0x01
+    COMPUTE:    0x02
+    DMA:        0x03
+    FENCE:      0x04
+    WAIT:       0x05
+    REG_WRITE:  0x06
+    REG_READ:   0x07
+
+  limits:
+    RING_SIZE_MIN:  4096
+    RING_SIZE_MAX:  262144   # 256 * 1024
+    MAX_QUEUES:     16
+    MAX_ENGINES:    4
+

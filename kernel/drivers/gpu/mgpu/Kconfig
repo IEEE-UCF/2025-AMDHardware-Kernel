@@ -1,19 +1,132 @@
-menu "Minimal FPGA GPU (mgpu)"
-config MGPU
-    tristate "Minimal FPGA GPU driver (mgpu)"
-    default m
-    help
-      Render-only FPGA GPU driver for bring-up and testing.
+# SPDX-License-Identifier: GPL-2.0-only
+
+config DRM_MGPU
+	tristate "GPU driver for FPGA"
+	depends on HAS_IOMEM
+	depends on OF || COMPILE_TEST
+	select DMA_SHARED_BUFFER if MGPU_DRM
+	select CMA if MGPU_GEM_CMA
+	select DMA_CMA if MGPU_GEM_CMA
+	help
+	  Choose this option if you have an FPGA-based GPU implementation
+	  that follows the MGPU architecture. This driver provides basic
+	  GPU functionality including command submission, memory management,
+	  and shader execution.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called mgpu.
+
+	  If unsure, say N.
 
 config MGPU_MISCDEV
-    bool "Expose as /dev/mgpu0 misc device (MVP)"
-    default y
-    depends on MGPU
-    help
-      Use a misc char device for ioctls (fastest path).
+	bool "Use misc char device instead of DRM"
+	depends on DRM_MGPU
+	default y
+	help
+	  Use a simple character device (/dev/mgpu0) instead of the
+	  DRM subsystem. This is simpler for initial development and
+	  testing.
+
+	  If unsure, say Y.
+
+config MGPU_GEM_CMA
+	bool "Use CMA helper for GEM buffer objects"
+	depends on DRM_MGPU && !MGPU_MISCDEV
+	default n
+	help
+	  Use the DRM CMA helper functions for buffer object management.
+	  This simplifies memory management but requires CMA support.
+
+	  If unsure, say N.
+
+config MGPU_SCHEDULER
+	bool "Enable GPU scheduler"
+	depends on DRM_MGPU
+	default n
+	help
+	  Enable the GPU scheduler for managing multiple queues and
+	  priorities. This adds support for FIFO and round-robin
+	  scheduling with preemption stubs.
+
+	  If unsure, say N.
+
+config MGPU_SHADER
+	bool "Enable shader management"
+	depends on DRM_MGPU
+	default y
+	help
+	  Enable shader and pipeline state management. This includes
+	  binary validation, instruction memory writes, and hot swap
+	  support.
+
+	  If unsure, say Y.
 
 config MGPU_SPI
-    bool "SPI transport backend"
-    default n
-    depends on MGPU && SPI
-endmenu
+	bool "Enable SPI transport backend"
+	depends on DRM_MGPU && SPI
+	default n
+	help
+	  Enable support for SPI as a transport layer to the GPU.
+	  This is useful when the GPU is connected via SPI bridge.
+
+	  If unsure, say N.
+
+config MGPU_DRM
+	bool "Enable full DRM support"
+	depends on DRM_MGPU && DRM && !MGPU_MISCDEV
+	default n
+	help
+	  Enable full DRM subsystem integration with render nodes.
+	  This should be enabled once the basic driver is stable.
+
+	  If unsure, say N.
+
+config MGPU_TRACE
+	bool "Enable tracepoints"
+	depends on DRM_MGPU && TRACEPOINTS
+	default n
+	help
+	  Enable tracepoints for debugging and performance analysis.
+	  This allows detailed tracing of driver operations.
+
+	  If unsure, say N.
+
+config MGPU_SELFTEST
+	bool "Enable built in self tests"
+	depends on DRM_MGPU
+	default n
+	help
+	  Enable built-in self tests that can be run via module
+	  parameter. These tests verify basic driver functionality.
+
+	  If unsure, say N.
+
+config MGPU_KUNIT
+	bool "Enable KUnit tests"
+	depends on DRM_MGPU && KUNIT
+	default n
+	help
+	  Enable KUnit test cases for the MGPU driver. These provide
+	  unit test coverage for driver components.
+
+	  If unsure, say N.
+
+config MGPU_COREDUMP
+	bool "Enable GPU coredump support"
+	depends on DRM_MGPU && DEV_COREDUMP
+	default y
+	help
+	  Enable device coredump support for capturing GPU state
+	  after errors or resets. This is useful for DEBUGGING.
+
+	  If unsure, say Y.
+
+config MGPU_DEBUG
+	bool "Enable debug messages"
+	depends on DRM_MGPU
+	default n
+	help
+	  Enable additional debug messages. This will make the driver
+	  more verbose but can help with DEBUGGING issues.
+
+	  If unsure, say N.

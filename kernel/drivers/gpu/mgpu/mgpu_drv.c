@@ -30,11 +30,9 @@
 #include <linux/uaccess.h>
 #include <linux/debugfs.h>
 
-#include "mgpu_drm.h"
-#include "mgpu_regs.h"
 
 #define DRIVER_NAME "mgpu"
-#define DRIVER_DESC "Minimal GPU Driver for FPGA"
+#define DRIVER_DESC "GPU Driver for FPGA"
 #define DRIVER_VERSION "0.1.0"
 
 /* Module parameters */

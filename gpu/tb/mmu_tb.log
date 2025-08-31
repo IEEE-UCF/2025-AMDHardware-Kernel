@@ -1,0 +1,65 @@
+make[1]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+rm -f results.xml
+"make" -f Makefile results.xml
+make[2]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+mkdir -p sim_build_mmu_tb
+/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/iverilog -o sim_build_mmu_tb/sim.vvp -D COCOTB_SIM=1 -s mmu -g2012 -f sim_build_mmu_tb/cmds.f  /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/alu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/attribute_interpolator.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/controller.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/fragment_shader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/framebuffer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_register_file.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_top.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/instruction_decoder.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/_interconnect.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/mmu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/rasterizer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_core.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_loader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/axi_wrapper.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/texture_unit.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/vertex_fetch.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/reset_sync.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/arbiter.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/fifo.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/clock_divider.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/mux_n.sv
+rm -f results.xml
+MODULE=mmu_tb TESTCASE= TOPLEVEL=mmu TOPLEVEL_LANG=verilog \
+         /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp -M /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build_mmu_tb/sim.vvp  
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:108  in set_program_name_in_venv        Using Python virtual environment interpreter at /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Running tests with cocotb v1.9.2 from /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1756600678
+     0.00ns INFO     cocotb.regression                  Found test mmu_tb.test_mmu_basic
+     0.00ns INFO     cocotb.regression                  Found test mmu_tb.test_mmu_complex_stress
+     0.00ns INFO     cocotb.regression                  Found test mmu_tb.test_mmu_directed_edges
+     0.00ns INFO     cocotb.regression                  Found test mmu_tb.test_mmu_reset
+     0.00ns INFO     cocotb.regression                  running test_mmu_basic (1/4)
+     0.00ns INFO     cocotb.mmu                         Starting MMU test (Address width: 32 bits)
+    20.00ns INFO     cocotb.mmu                         Test 1: Basic address translation
+    40.00ns INFO     cocotb.mmu                         Virtual: 0x100, Physical: 0x1100, Expected: 0x1100
+    40.00ns INFO     cocotb.mmu                         Test 2: Boundary conditions
+    50.00ns INFO     cocotb.mmu                         Boundary test: Virtual: 0x7ff, Error: 0
+    60.00ns INFO     cocotb.mmu                         Boundary violation: Virtual: 0x800, Error: 1
+    60.00ns INFO     cocotb.mmu                         Test 3: Out of bounds access
+    70.00ns INFO     cocotb.mmu                         Test 4: Invalid input handling
+    80.00ns INFO     cocotb.mmu                         Basic MMU test passed!
+    80.00ns INFO     cocotb.regression                  test_mmu_basic passed
+    80.00ns INFO     cocotb.regression                  running test_mmu_complex_stress (2/4)
+    80.00ns INFO     cocotb.mmu                         Starting complex MMU stress test
+  9640.00ns INFO     cocotb.mmu                         Complex stress: 400/2000 cycles
+  9640.00ns INFO     cocotb.mmu                           Stats: errors=207, valid=321, boundaries=0, overflows=0
+ 18670.00ns INFO     cocotb.mmu                         Complex stress: 800/2000 cycles
+ 18670.00ns INFO     cocotb.mmu                           Stats: errors=451, valid=557, boundaries=0, overflows=0
+ 27680.00ns INFO     cocotb.mmu                         Complex stress: 1200/2000 cycles
+ 27680.00ns INFO     cocotb.mmu                           Stats: errors=688, valid=803, boundaries=0, overflows=0
+ 36730.00ns INFO     cocotb.mmu                         Complex stress: 1600/2000 cycles
+ 36730.00ns INFO     cocotb.mmu                           Stats: errors=936, valid=1045, boundaries=0, overflows=0
+ 45690.00ns INFO     cocotb.mmu                         Complex stress: 2000/2000 cycles
+ 45690.00ns INFO     cocotb.mmu                           Stats: errors=1186, valid=1263, boundaries=0, overflows=0
+ 45690.00ns INFO     cocotb.mmu                         Complex stress test passed!
+ 45690.00ns INFO     cocotb.mmu                         Final stats - Errors: 1186, Valid: 1263
+ 45690.00ns INFO     cocotb.mmu                         Boundary hits: 0, Overflows: 0
+ 45690.00ns INFO     cocotb.mmu                         Error rate: 59.3%, Valid rate: 63.1%
+ 45690.00ns INFO     cocotb.regression                  test_mmu_complex_stress passed
+ 45690.00ns INFO     cocotb.regression                  running test_mmu_directed_edges (3/4)
+ 45860.00ns INFO     cocotb.regression                  test_mmu_directed_edges passed
+ 45860.00ns INFO     cocotb.regression                  running test_mmu_reset (4/4)
+ 45860.00ns INFO     cocotb.mmu                         Testing reset behavior
+ 45900.00ns INFO     cocotb.mmu                         Reset test passed!
+ 45900.00ns INFO     cocotb.regression                  test_mmu_reset passed
+ 45900.00ns INFO     cocotb.regression                  ****************************************************************************************
+                                                        ** TEST                            STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ****************************************************************************************
+                                                        ** mmu_tb.test_mmu_basic            PASS          80.00           0.00      19603.23  **
+                                                        ** mmu_tb.test_mmu_complex_stress   PASS       45610.00           0.81      56602.29  **
+                                                        ** mmu_tb.test_mmu_directed_edges   PASS         170.00           0.00      43143.70  **
+                                                        ** mmu_tb.test_mmu_reset            PASS          40.00           0.00      32128.75  **
+                                                        ****************************************************************************************
+                                                        ** TESTS=4 PASS=4 FAIL=0 SKIP=0                45900.00           0.91      50362.73  **
+                                                        ****************************************************************************************
+                                                        
+make[2]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+make[1]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'

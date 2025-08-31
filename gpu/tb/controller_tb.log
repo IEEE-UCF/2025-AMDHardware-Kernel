@@ -1,0 +1,65 @@
+make[1]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+rm -f results.xml
+"make" -f Makefile results.xml
+make[2]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+mkdir -p sim_build_controller_tb
+/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/iverilog -o sim_build_controller_tb/sim.vvp -D COCOTB_SIM=1 -s controller -g2012 -f sim_build_controller_tb/cmds.f  /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/alu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/attribute_interpolator.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/controller.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/fragment_shader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/framebuffer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_register_file.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_top.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/instruction_decoder.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/_interconnect.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/mmu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/rasterizer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_core.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_loader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/axi_wrapper.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/texture_unit.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/vertex_fetch.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/reset_sync.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/arbiter.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/fifo.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/clock_divider.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/mux_n.sv
+rm -f results.xml
+MODULE=controller_tb TESTCASE= TOPLEVEL=controller TOPLEVEL_LANG=verilog \
+         /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp -M /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build_controller_tb/sim.vvp  
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:108  in set_program_name_in_venv        Using Python virtual environment interpreter at /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Running tests with cocotb v1.9.2 from /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1756600678
+     0.00ns INFO     cocotb.regression                  Found test controller_tb.test_controller_basic
+     0.00ns INFO     cocotb.regression                  Found test controller_tb.test_controller_stress
+     0.00ns INFO     cocotb.regression                  Found test controller_tb.test_controller_extended_stress
+     0.00ns INFO     cocotb.regression                  running test_controller_basic (1/3)
+     0.00ns INFO     cocotb.controller                  Starting controller test
+    20.00ns INFO     cocotb.controller                  Test 1: Reading status register
+    30.00ns INFO     cocotb.controller                  Initial status: 0x00000000
+    30.00ns INFO     cocotb.controller                  Test 2: Start command
+    50.00ns INFO     cocotb.controller                  Start pulse: 1
+    50.00ns INFO     cocotb.controller                  Test 3: Pipeline busy
+    60.00ns INFO     cocotb.controller                  Test 4: IRQ generation
+    80.00ns INFO     cocotb.controller                  IRQ: 1
+    90.00ns INFO     cocotb.controller                  Status with IRQ: 0x00000002
+    90.00ns INFO     cocotb.controller                  Test 5: Clear IRQ
+   110.00ns INFO     cocotb.controller                  Test 6: Queue behavior
+   230.00ns INFO     cocotb.controller                  Queue count: 5
+   250.00ns INFO     cocotb.controller                  Controller test passed!
+   250.00ns INFO     cocotb.regression                  test_controller_basic passed
+   250.00ns INFO     cocotb.regression                  running test_controller_stress (2/3)
+   250.00ns INFO     cocotb.controller                  Starting stress test (800 cycles)
+  1290.00ns INFO     cocotb.controller                  Stress test: 100/800 cycles
+  2290.00ns INFO     cocotb.controller                  Stress test: 200/800 cycles
+  3290.00ns INFO     cocotb.controller                  Stress test: 300/800 cycles
+  4290.00ns INFO     cocotb.controller                  Stress test: 400/800 cycles
+  5290.00ns INFO     cocotb.controller                  Stress test: 500/800 cycles
+  6290.00ns INFO     cocotb.controller                  Stress test: 600/800 cycles
+  7290.00ns INFO     cocotb.controller                  Stress test: 700/800 cycles
+  8290.00ns INFO     cocotb.controller                  Stress test: 800/800 cycles
+  8290.00ns INFO     cocotb.controller                  Stress test completed! (800 cycles)
+  8290.00ns INFO     cocotb.regression                  test_controller_stress passed
+  8290.00ns INFO     cocotb.regression                  running test_controller_extended_stress (3/3)
+  8290.00ns INFO     cocotb.controller                  Starting extended stress test (2000 cycles)
+ 12330.00ns INFO     cocotb.controller                  Extended stress: 400/2000 cycles
+ 16330.00ns INFO     cocotb.controller                  Extended stress: 800/2000 cycles
+ 20330.00ns INFO     cocotb.controller                  Extended stress: 1200/2000 cycles
+ 24330.00ns INFO     cocotb.controller                  Extended stress: 1600/2000 cycles
+ 28330.00ns INFO     cocotb.controller                  Extended stress: 2000/2000 cycles
+ 28330.00ns INFO     cocotb.controller                  Extended stress test completed!
+ 28330.00ns INFO     cocotb.regression                  test_controller_extended_stress passed
+ 28330.00ns INFO     cocotb.regression                  *******************************************************************************************************
+                                                        ** TEST                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *******************************************************************************************************
+                                                        ** controller_tb.test_controller_basic             PASS         250.00           0.01      36345.93  **
+                                                        ** controller_tb.test_controller_stress            PASS        8040.00           0.18      45577.63  **
+                                                        ** controller_tb.test_controller_extended_stress   PASS       20040.00           0.43      46198.64  **
+                                                        *******************************************************************************************************
+                                                        ** TESTS=3 PASS=3 FAIL=0 SKIP=0                               28330.00           0.68      41777.51  **
+                                                        *******************************************************************************************************
+                                                        
+make[2]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+make[1]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'

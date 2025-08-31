@@ -1,0 +1,37 @@
+make[1]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+rm -f results.xml
+"make" -f Makefile results.xml
+make[2]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+mkdir -p sim_build_texture_tb
+/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/iverilog -o sim_build_texture_tb/sim.vvp -D COCOTB_SIM=1 -s texture_unit -g2012 -f sim_build_texture_tb/cmds.f  /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/alu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/attribute_interpolator.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/controller.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/fragment_shader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/framebuffer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_register_file.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_top.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/instruction_decoder.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/_interconnect.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/mmu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/rasterizer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_core.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_loader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/axi_wrapper.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/texture_unit.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/vertex_fetch.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/reset_sync.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/arbiter.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/fifo.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/clock_divider.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/mux_n.sv
+rm -f results.xml
+MODULE=texture_tb TESTCASE= TOPLEVEL=texture_unit TOPLEVEL_LANG=verilog \
+         /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp -M /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build_texture_tb/sim.vvp  
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:108  in set_program_name_in_venv        Using Python virtual environment interpreter at /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Running tests with cocotb v1.9.2 from /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1756600678
+     0.00ns INFO     cocotb.regression                  Found test texture_tb.test_texture_corner0
+     0.00ns INFO     cocotb.regression                  Found test texture_tb.test_data_valid_follows_req
+     0.00ns INFO     cocotb.regression                  Found test texture_tb.test_random_samples
+     0.00ns INFO     cocotb.regression                  running test_texture_corner0 (1/3)
+   130.00ns INFO     cocotb.regression                  test_texture_corner0 passed
+   130.00ns INFO     cocotb.regression                  running test_data_valid_follows_req (2/3)
+   200.00ns INFO     cocotb                             Cycle 0: i_req_valid=1 o_data_valid=0
+   210.00ns INFO     cocotb                             Cycle 1: i_req_valid=1 o_data_valid=1
+   220.00ns INFO     cocotb.regression                  test_data_valid_follows_req passed
+   220.00ns INFO     cocotb.regression                  running test_random_samples (3/3)
+3000270.00ns INFO     cocotb.regression                  test_random_samples passed
+3000270.00ns INFO     cocotb.regression                  ************************************************************************************************
+                                                         ** TEST                                    STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                         ************************************************************************************************
+                                                         ** texture_tb.test_texture_corner0          PASS         130.00           0.00      27260.46  **
+                                                         ** texture_tb.test_data_valid_follows_req   PASS          90.00           0.00      43464.77  **
+                                                         ** texture_tb.test_random_samples           PASS     3000050.00          28.97     103570.95  **
+                                                         ************************************************************************************************
+                                                         ** TESTS=3 PASS=3 FAIL=0 SKIP=0                      3000270.00          29.04     103331.71  **
+                                                         ************************************************************************************************
+                                                         
+make[2]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+make[1]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'

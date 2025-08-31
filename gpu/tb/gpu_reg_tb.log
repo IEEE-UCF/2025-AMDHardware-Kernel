@@ -1,0 +1,36 @@
+make[1]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+rm -f results.xml
+"make" -f Makefile results.xml
+make[2]: Entering directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+mkdir -p sim_build_gpu_reg_tb
+/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/iverilog -o sim_build_gpu_reg_tb/sim.vvp -D COCOTB_SIM=1 -s gpu_register_file -g2012 -f sim_build_gpu_reg_tb/cmds.f  /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/alu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/attribute_interpolator.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/controller.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/fragment_shader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/framebuffer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_register_file.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/gpu_top.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/instruction_decoder.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/_interconnect.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/mmu.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/rasterizer.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_core.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_loader.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/axi_wrapper.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/texture_unit.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/vertex_fetch.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/reset_sync.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/arbiter.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/fifo.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/clock_divider.sv /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../rtl_utils/mux_n.sv
+rm -f results.xml
+MODULE=gpu_reg_tb TESTCASE= TOPLEVEL=gpu_register_file TOPLEVEL_LANG=verilog \
+         /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp -M /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build_gpu_reg_tb/sim.vvp  
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:108  in set_program_name_in_venv        Using Python virtual environment interpreter at /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/bin/python
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:101  in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Running tests with cocotb v1.9.2 from /home/quil/Documents/GitRepos/2025-AMDHardware-GPU/.cocotbvenv/lib/python3.13/site-packages/cocotb
+     0.00ns INFO     cocotb                             Seeding Python random module with 1756600678
+     0.00ns INFO     cocotb.regression                  Found test gpu_reg_tb.test_register_file_comprehensive
+     0.00ns INFO     cocotb.regression                  running test_register_file_comprehensive (1/1)
+     0.00ns INFO     cocotb.gpu_register_file           Reference model initialized with 16 registers.
+     0.00ns INFO     cocotb.gpu_register_file           Resetting DUT...
+    40.00ns INFO     cocotb.gpu_register_file           Reset complete.
+    40.00ns INFO     cocotb.gpu_register_file           Starting directed tests...
+    90.00ns INFO     cocotb.gpu_register_file           Testing RAW hazard (read-first)...
+   110.00ns INFO     cocotb.gpu_register_file           Directed tests passed.
+   110.00ns INFO     cocotb.gpu_register_file           Starting random stress test with 50000 cycles (seed=1337)...
+500120.00ns INFO     cocotb                             Coverage check PASSED.
+500120.00ns INFO     cocotb.gpu_register_file           Random stress test passed.
+500120.00ns INFO     cocotb.regression                  test_register_file_comprehensive passed
+500120.00ns INFO     cocotb.regression                  *****************************************************************************************************
+                                                        ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************
+                                                        ** gpu_reg_tb.test_register_file_comprehensive   PASS      500120.00           8.22      60829.64  **
+                                                        *****************************************************************************************************
+                                                        ** TESTS=1 PASS=1 FAIL=0 SKIP=0                            500120.00           8.28      60377.97  **
+                                                        *****************************************************************************************************
+                                                        
+make[2]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'
+make[1]: Leaving directory '/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb'

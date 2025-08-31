@@ -561,7 +561,7 @@ static void __exit mgpu_exit(void)
 module_init(mgpu_init);
 module_exit(mgpu_exit);
 
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Rafeed Khan");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL v2");
 MODULE_VERSION(DRIVER_VERSION);

@@ -491,5 +491,5 @@ void mgpu_dump_state(struct mgpu_device *mdev)
 }
 
 MODULE_DESCRIPTION("MGPU Health Monitoring");
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Rafeed Khan");
 MODULE_LICENSE("GPL v2");

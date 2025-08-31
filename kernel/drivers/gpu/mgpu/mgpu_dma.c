@@ -208,5 +208,5 @@ index 2ef3c7cd75f187c16ecd2a03cec1b94df8baccea..c706f96e9b9c584c71bf7e6be7815dcb
 +EXPORT_SYMBOL_GPL(mgpu_dma_copy);
 +
 +MODULE_DESCRIPTION("mGPU DMA helpers");
-+MODULE_AUTHOR("Johnny Doe");
++MODULE_AUTHOR("Rafeed Khan");
 +MODULE_LICENSE("GPL");

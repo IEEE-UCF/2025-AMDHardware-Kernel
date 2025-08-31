@@ -294,3 +294,139 @@ void mgpu_cmdq_fini(struct mgpu_device *mdev)
         mdev->cmd_ring = NULL;
     }
 }
+
+/* Get available space in ring (in dwords) */
+static inline u32 mgpu_ring_space(struct mgpu_ring *ring)
+{
+    u32 head, tail, space;
+    
+    /* Read head from hardware */
+    head = mgpu_read(ring->mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10));
+    tail = ring->tail;
+    
+    if (head <= tail)
+        space = (ring->size / 4) - (tail - head) - 1;  /* Convert to dwords */
+    else
+        space = head - tail - 1;
+    
+    return space;
+}
+
+/* Suspend command queue processing */
+int mgpu_cmdq_suspend(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    unsigned long timeout;
+    u32 head, tail;
+    
+    if (!ring)
+        return 0;
+    
+    dev_dbg(mdev->dev, "Suspending command queue\n");
+    
+    /* Stop accepting new commands */
+    ring->enabled = false;
+    
+    /* Wait for pending commands to complete */
+    timeout = jiffies + msecs_to_jiffies(1000);
+    while (time_before(jiffies, timeout)) {
+        head = mgpu_read(mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10));
+        tail = mgpu_read(mdev, MGPU_REG_CMD_TAIL + (ring->queue_id * 0x10));
+        
+        if (head == tail) {
+            /* Queue is empty */
+            break;
+        }
+        
+        msleep(10);
+    }
+    
+    if (head != tail) {
+        dev_warn(mdev->dev, "Command queue not empty at suspend (head=%u, tail=%u)\n",
+                 head, tail);
+        /* Continue anyway */
+    }
+    
+    /* Save queue state */
+    ring->last_head = head;
+    
+    return 0;
+}
+
+/* Resume command queue processing */
+int mgpu_cmdq_resume(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    
+    if (!ring)
+        return 0;
+    
+    dev_dbg(mdev->dev, "Resuming command queue\n");
+    
+    /* Restore queue registers */
+    mgpu_write(mdev, MGPU_REG_CMD_BASE + (ring->queue_id * 0x10),
+               lower_32_bits(ring->dma_addr));
+    mgpu_write(mdev, MGPU_REG_CMD_SIZE + (ring->queue_id * 0x10),
+               ring->size);
+    
+    /* Restore head/tail pointers */
+    mgpu_write(mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10),
+               ring->last_head);
+    mgpu_write(mdev, MGPU_REG_CMD_TAIL + (ring->queue_id * 0x10),
+               ring->tail);
+    
+    /* Re-enable queue */
+    ring->enabled = true;
+    
+    /* Wake any waiters */
+    wake_up_all(&ring->wait_space);
+    
+    return 0;
+}
+
+/* Stop all command queue processing (for reset) */
+void mgpu_cmdq_stop(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    
+    if (!ring)
+        return;
+    
+    /* Disable queue */
+    ring->enabled = false;
+    
+    /* Clear hardware registers */
+    mgpu_write(mdev, MGPU_REG_CMD_BASE + (ring->queue_id * 0x10), 0);
+    mgpu_write(mdev, MGPU_REG_CMD_SIZE + (ring->queue_id * 0x10), 0);
+    
+    /* Wake any waiters */
+    wake_up_all(&ring->wait_space);
+    
+    dev_info(mdev->dev, "Command queue stopped\n");
+}
+
+/* Handle command queue interrupt */
+void mgpu_cmdq_irq_handler(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    u32 head;
+    
+    if (!ring)
+        return;
+    
+    /* Update completed commands count */
+    head = mgpu_read(mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10));
+    
+    if (head != ring->last_head) {
+        /* Commands have completed */
+        ring->completed_cmds++;
+        ring->last_head = head;
+        ring->last_activity = jiffies;
+        
+        /* Wake any threads waiting for space */
+        wake_up_all(&ring->wait_space);
+    }
+    
+    dev_dbg(mdev->dev, "Command queue IRQ: head=%u, tail=%u\n",
+            head, ring->tail);
+}

@@ -6,6 +6,7 @@
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/kref.h>
+#include <linux/dma-mapping.h>
 
 /* Forward declarations */
 struct mgpu_device;
@@ -54,6 +55,15 @@ struct mgpu_device {
     struct class *class;
 };
 
+/* Core (mgpu_core.c) */
+int mgpu_core_init(struct mgpu_device *mdev);
+void mgpu_core_fini(struct mgpu_device *mdev);
+int mgpu_core_reset(struct mgpu_device *mdev);
+int mgpu_core_test_alive(struct mgpu_device *mdev);
+u32 mgpu_core_get_status(struct mgpu_device *mdev);
+bool mgpu_core_is_idle(struct mgpu_device *mdev);
+int mgpu_core_wait_idle(struct mgpu_device *mdev, unsigned int timeout_ms);
+
 /* Memory Management (mgpu_gem.c) */
 
 /* Buffer object functions */
@@ -70,6 +80,22 @@ void mgpu_bo_vunmap(struct mgpu_bo *bo, void *vaddr);
 int mgpu_bo_cpu_prep(struct mgpu_bo *bo, bool write);
 int mgpu_bo_cpu_fini(struct mgpu_bo *bo, bool write);
 void mgpu_gem_cleanup(struct mgpu_device *mdev);
+
+/* DMA helpers (mgpu_dma.c) */
+int mgpu_dma_init(struct mgpu_device *mdev);
+void mgpu_dma_fini(struct mgpu_device *mdev);
+void *mgpu_dma_alloc(struct mgpu_device *mdev, size_t size,
+                     dma_addr_t *dma_addr, gfp_t gfp,
+                     unsigned long attrs);
+void mgpu_dma_free(struct mgpu_device *mdev, size_t size,
+                   void *vaddr, dma_addr_t dma_addr,
+                   unsigned long attrs);
+void mgpu_dma_sync_for_cpu(struct mgpu_device *mdev, dma_addr_t dma_addr,
+                           size_t size, enum dma_data_direction dir);
+void mgpu_dma_sync_for_device(struct mgpu_device *mdev, dma_addr_t dma_addr,
+                              size_t size, enum dma_data_direction dir);
+int mgpu_dma_copy(struct mgpu_device *mdev, dma_addr_t src, dma_addr_t dst,
+                  u32 size, bool wait);
 
 /* Command Queue (mgpu_cmdq.c) */
 

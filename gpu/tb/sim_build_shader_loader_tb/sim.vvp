@@ -1,0 +1,75 @@
+#! /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/system.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_sys.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_textio.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2005_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/va_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2009.vpi";
+S_0x88ed460 .scope package, "$unit" "$unit" 2 1;
+ .timescale -9 -12;
+S_0x8980c70 .scope module, "shader_loader" "shader_loader" 3 1;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "rst_n";
+    .port_info 2 /INPUT 1 "i_host_we";
+    .port_info 3 /INPUT 8 "i_host_addr";
+    .port_info 4 /INPUT 32 "i_host_wdata";
+    .port_info 5 /OUTPUT 32 "o_host_rdata";
+    .port_info 6 /INPUT 8 "i_gpu_addr";
+    .port_info 7 /OUTPUT 32 "o_gpu_instr";
+P_0x892fe70 .param/l "INSTR_DEPTH" 0 3 3, +C4<00000000000000000000000100000000>;
+P_0x892feb0 .param/l "INSTR_WIDTH" 0 3 2, +C4<00000000000000000000000000100000>;
+L_0x88ed3f0 .functor BUFZ 32, L_0x88b90d0, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>;
+L_0x8959a70 .functor BUFZ 32, L_0x88b9230, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>;
+v0x897de30_0 .net *"_ivl_0", 31 0, L_0x88b90d0;  1 drivers
+v0x89445c0_0 .net *"_ivl_10", 9 0, L_0x88b92d0;  1 drivers
+L_0x7f84e0529060 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v0x897b560_0 .net *"_ivl_13", 1 0, L_0x7f84e0529060;  1 drivers
+v0x8977c10_0 .net *"_ivl_2", 9 0, L_0x88b9190;  1 drivers
+L_0x7f84e0529018 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v0x8977e00_0 .net *"_ivl_5", 1 0, L_0x7f84e0529018;  1 drivers
+v0x8978200_0 .net *"_ivl_8", 31 0, L_0x88b9230;  1 drivers
+o0x7f84e0572138 .functor BUFZ 1, C4<z>; HiZ drive
+v0x8978010_0 .net "clk", 0 0, o0x7f84e0572138;  0 drivers
+o0x7f84e0572168 .functor BUFZ 8, C4<zzzzzzzz>; HiZ drive
+v0x897da60_0 .net "i_gpu_addr", 7 0, o0x7f84e0572168;  0 drivers
+o0x7f84e0572198 .functor BUFZ 8, C4<zzzzzzzz>; HiZ drive
+v0x88b8a10_0 .net "i_host_addr", 7 0, o0x7f84e0572198;  0 drivers
+o0x7f84e05721c8 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x88b8af0_0 .net "i_host_wdata", 31 0, o0x7f84e05721c8;  0 drivers
+o0x7f84e05721f8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x88b8bd0_0 .net "i_host_we", 0 0, o0x7f84e05721f8;  0 drivers
+v0x88b8c90 .array "instruction_mem", 0 255, 31 0;
+v0x88b8d50_0 .net "o_gpu_instr", 31 0, L_0x88ed3f0;  1 drivers
+v0x88b8e30_0 .net "o_host_rdata", 31 0, L_0x8959a70;  1 drivers
+o0x7f84e0572288 .functor BUFZ 1, C4<z>; HiZ drive
+v0x88b8f10_0 .net "rst_n", 0 0, o0x7f84e0572288;  0 drivers
+E_0x891bd70 .event posedge, v0x8978010_0;
+L_0x88b90d0 .array/port v0x88b8c90, L_0x88b9190;
+L_0x88b9190 .concat [ 8 2 0 0], o0x7f84e0572168, L_0x7f84e0529018;
+L_0x88b9230 .array/port v0x88b8c90, L_0x88b92d0;
+L_0x88b92d0 .concat [ 8 2 0 0], o0x7f84e0572198, L_0x7f84e0529060;
+    .scope S_0x8980c70;
+T_0 ;
+    %wait E_0x891bd70;
+    %load/vec4 v0x88b8bd0_0;
+    %flag_set/vec4 8;
+    %jmp/0xz  T_0.0, 8;
+    %load/vec4 v0x88b8af0_0;
+    %load/vec4 v0x88b8a10_0;
+    %pad/u 10;
+    %ix/vec4 3;
+    %ix/load 4, 0, 0; Constant delay
+    %assign/vec4/a/d v0x88b8c90, 0, 4;
+T_0.0 ;
+    %jmp T_0;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "-";
+    "/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/shader_loader.sv";

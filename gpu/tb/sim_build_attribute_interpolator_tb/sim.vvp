@@ -1,0 +1,75 @@
+#! /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/system.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_sys.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_textio.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2005_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/va_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2009.vpi";
+S_0x1cf9ec90 .scope package, "$unit" "$unit" 2 1;
+ .timescale -9 -12;
+S_0x1cf0b410 .scope module, "attribute_interpolator" "attribute_interpolator" 3 4;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 32 "i_attr0";
+    .port_info 1 /INPUT 32 "i_attr1";
+    .port_info 2 /INPUT 32 "i_attr2";
+    .port_info 3 /INPUT 21 "i_lambda0";
+    .port_info 4 /INPUT 21 "i_lambda1";
+    .port_info 5 /INPUT 21 "i_lambda2";
+    .port_info 6 /OUTPUT 32 "o_interpolated_attr";
+P_0x1cf4de90 .param/l "ATTR_WIDTH" 0 3 5, +C4<00000000000000000000000000100000>;
+P_0x1cf4ded0 .param/l "WEIGHT_WIDTH" 0 3 6, +C4<00000000000000000000000000010101>;
+v0x1cf9be50_0 .net/s *"_ivl_0", 52 0, L_0x1ced9050;  1 drivers
+v0x1cf625e0_0 .net/s *"_ivl_12", 52 0, L_0x1ced9510;  1 drivers
+v0x1cf99580_0 .net/s *"_ivl_14", 52 0, L_0x1ced95b0;  1 drivers
+v0x1cf95c30_0 .net/s *"_ivl_18", 54 0, L_0x1ced97a0;  1 drivers
+v0x1cf95e20_0 .net/s *"_ivl_2", 52 0, L_0x1ced90f0;  1 drivers
+v0x1cf96220_0 .net/s *"_ivl_20", 54 0, L_0x1ced98a0;  1 drivers
+v0x1cf96030_0 .net/s *"_ivl_22", 54 0, L_0x1ced9940;  1 drivers
+v0x1cf9ba80_0 .net/s *"_ivl_24", 54 0, L_0x1ced9af0;  1 drivers
+v0x1ced8140_0 .net *"_ivl_28", 54 0, L_0x1ced9e90;  1 drivers
+v0x1ced8220_0 .net *"_ivl_30", 33 0, L_0x1ced9da0;  1 drivers
+v0x1ced8300_0 .net/s *"_ivl_6", 52 0, L_0x1ced9230;  1 drivers
+v0x1ced83e0_0 .net/s *"_ivl_8", 52 0, L_0x1ced9300;  1 drivers
+o0x7fadd57cf258 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced84c0_0 .net/s "i_attr0", 31 0, o0x7fadd57cf258;  0 drivers
+o0x7fadd57cf288 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced85a0_0 .net/s "i_attr1", 31 0, o0x7fadd57cf288;  0 drivers
+o0x7fadd57cf2b8 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced8680_0 .net/s "i_attr2", 31 0, o0x7fadd57cf2b8;  0 drivers
+o0x7fadd57cf2e8 .functor BUFZ 21, C4<zzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced8760_0 .net/s "i_lambda0", 20 0, o0x7fadd57cf2e8;  0 drivers
+o0x7fadd57cf318 .functor BUFZ 21, C4<zzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced8840_0 .net/s "i_lambda1", 20 0, o0x7fadd57cf318;  0 drivers
+o0x7fadd57cf348 .functor BUFZ 21, C4<zzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x1ced8a30_0 .net/s "i_lambda2", 20 0, o0x7fadd57cf348;  0 drivers
+v0x1ced8b10_0 .net/s "o_interpolated_attr", 31 0, L_0x1ceda010;  1 drivers
+v0x1ced8bf0_0 .net/s "sum_terms", 54 0, L_0x1ced9be0;  1 drivers
+v0x1ced8cd0_0 .net/s "term0", 52 0, L_0x1ced9190;  1 drivers
+v0x1ced8db0_0 .net/s "term1", 52 0, L_0x1ced9400;  1 drivers
+v0x1ced8e90_0 .net/s "term2", 52 0, L_0x1ced96d0;  1 drivers
+L_0x1ced9050 .extend/s 53, o0x7fadd57cf258;
+L_0x1ced90f0 .extend/s 53, o0x7fadd57cf2e8;
+L_0x1ced9190 .arith/mult 53, L_0x1ced9050, L_0x1ced90f0;
+L_0x1ced9230 .extend/s 53, o0x7fadd57cf288;
+L_0x1ced9300 .extend/s 53, o0x7fadd57cf318;
+L_0x1ced9400 .arith/mult 53, L_0x1ced9230, L_0x1ced9300;
+L_0x1ced9510 .extend/s 53, o0x7fadd57cf2b8;
+L_0x1ced95b0 .extend/s 53, o0x7fadd57cf348;
+L_0x1ced96d0 .arith/mult 53, L_0x1ced9510, L_0x1ced95b0;
+L_0x1ced97a0 .extend/s 55, L_0x1ced9190;
+L_0x1ced98a0 .extend/s 55, L_0x1ced9400;
+L_0x1ced9940 .arith/sum 55, L_0x1ced97a0, L_0x1ced98a0;
+L_0x1ced9af0 .extend/s 55, L_0x1ced96d0;
+L_0x1ced9be0 .arith/sum 55, L_0x1ced9940, L_0x1ced9af0;
+L_0x1ced9da0 .part L_0x1ced9be0, 21, 34;
+L_0x1ced9e90 .extend/s 55, L_0x1ced9da0;
+L_0x1ceda010 .part L_0x1ced9e90, 0, 32;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "-";
+    "/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/attribute_interpolator.sv";

@@ -1,0 +1,66 @@
+#! /nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/system.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_sys.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/vhdl_textio.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2005_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/va_math.vpi";
+:vpi_module "/nix/store/pdy9lwvh4qqf9cnj0j61l40hxq05kxza-iverilog-12.0/lib/ivl/v2009.vpi";
+S_0xc15ec70 .scope package, "$unit" "$unit" 2 1;
+ .timescale -9 -12;
+S_0xc0cb3f0 .scope module, "framebuffer" "framebuffer" 3 5;
+ .timescale -9 -12;
+    .port_info 0 /INPUT 1 "clk";
+    .port_info 1 /INPUT 1 "rst_n";
+    .port_info 2 /INPUT 1 "i_pixel_we";
+    .port_info 3 /INPUT 10 "i_pixel_x";
+    .port_info 4 /INPUT 10 "i_pixel_y";
+    .port_info 5 /INPUT 32 "i_pixel_color";
+    .port_info 6 /OUTPUT 1 "o_mem_req";
+    .port_info 7 /OUTPUT 19 "o_mem_addr";
+    .port_info 8 /OUTPUT 32 "o_mem_wdata";
+P_0xc0ca7b0 .param/l "COLOR_WIDTH" 0 3 8, +C4<00000000000000000000000000100000>;
+P_0xc0ca7f0 .param/l "SCREEN_HEIGHT" 0 3 7, +C4<00000000000000000000000111100000>;
+P_0xc0ca830 .param/l "SCREEN_WIDTH" 0 3 6, +C4<00000000000000000000001010000000>;
+o0x7f1ea25cf1c8 .functor BUFZ 1, C4<z>; HiZ drive
+L_0xc137a70 .functor BUFZ 1, o0x7f1ea25cf1c8, C4<0>, C4<0>, C4<0>;
+L_0xc137900 .functor BUFZ 19, L_0xc098190, C4<0000000000000000000>, C4<0000000000000000000>, C4<0000000000000000000>;
+o0x7f1ea25cf198 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+L_0xc13f590 .functor BUFZ 32, o0x7f1ea25cf198, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>, C4<00000000000000000000000000000000>;
+v0xc15be30_0 .net *"_ivl_0", 31 0, L_0xc097e30;  1 drivers
+L_0x7f1ea25860a8 .functor BUFT 1, C4<0000000000000000000000>, C4<0>, C4<0>, C4<0>;
+v0xc1225c0_0 .net *"_ivl_11", 21 0, L_0x7f1ea25860a8;  1 drivers
+v0xc159560_0 .net *"_ivl_12", 31 0, L_0xc098090;  1 drivers
+L_0x7f1ea2586018 .functor BUFT 1, C4<0000000000000000000000>, C4<0>, C4<0>, C4<0>;
+v0xc155c10_0 .net *"_ivl_3", 21 0, L_0x7f1ea2586018;  1 drivers
+L_0x7f1ea2586060 .functor BUFT 1, C4<00000000000000000000001010000000>, C4<0>, C4<0>, C4<0>;
+v0xc155e00_0 .net/2u *"_ivl_4", 31 0, L_0x7f1ea2586060;  1 drivers
+v0xc156200_0 .net *"_ivl_7", 31 0, L_0xc097f20;  1 drivers
+v0xc156010_0 .net *"_ivl_8", 31 0, L_0xc097fc0;  1 drivers
+o0x7f1ea25cf168 .functor BUFZ 1, C4<z>; HiZ drive
+v0xc15ba60_0 .net "clk", 0 0, o0x7f1ea25cf168;  0 drivers
+v0xc097480_0 .net "i_pixel_color", 31 0, o0x7f1ea25cf198;  0 drivers
+v0xc097560_0 .net "i_pixel_we", 0 0, o0x7f1ea25cf1c8;  0 drivers
+o0x7f1ea25cf1f8 .functor BUFZ 10, C4<zzzzzzzzzz>; HiZ drive
+v0xc097620_0 .net "i_pixel_x", 9 0, o0x7f1ea25cf1f8;  0 drivers
+o0x7f1ea25cf228 .functor BUFZ 10, C4<zzzzzzzzzz>; HiZ drive
+v0xc097700_0 .net "i_pixel_y", 9 0, o0x7f1ea25cf228;  0 drivers
+v0xc0977e0_0 .net "o_mem_addr", 18 0, L_0xc137900;  1 drivers
+v0xc0978c0_0 .net "o_mem_req", 0 0, L_0xc137a70;  1 drivers
+v0xc097980_0 .net "o_mem_wdata", 31 0, L_0xc13f590;  1 drivers
+o0x7f1ea25cf2e8 .functor BUFZ 1, C4<z>; HiZ drive
+v0xc097a60_0 .net "rst_n", 0 0, o0x7f1ea25cf2e8;  0 drivers
+v0xc097b20_0 .net "write_addr", 18 0, L_0xc098190;  1 drivers
+L_0xc097e30 .concat [ 10 22 0 0], o0x7f1ea25cf228, L_0x7f1ea2586018;
+L_0xc097f20 .arith/mult 32, L_0xc097e30, L_0x7f1ea2586060;
+L_0xc097fc0 .concat [ 10 22 0 0], o0x7f1ea25cf1f8, L_0x7f1ea25860a8;
+L_0xc098090 .arith/sum 32, L_0xc097f20, L_0xc097fc0;
+L_0xc098190 .part L_0xc098090, 0, 19;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "-";
+    "/home/quil/Documents/GitRepos/2025-AMDHardware-GPU/tb/../src/framebuffer.sv";

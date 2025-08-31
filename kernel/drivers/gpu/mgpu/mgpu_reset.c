@@ -2,11 +2,14 @@
 #include "mgpu_regs.h"
 #include "mgpu_internal.h"
 
+/* Forward declaration for the reset work handler */
+static void mgpu_reset_work_handler(struct work_struct *work);
+
 /* Reset work handler */
-static void mgpu_reset_work(struct work_struct *work)
+static void mgpu_reset_work_handler(struct work_struct *work)
 {
     struct mgpu_device *mdev = container_of(work, struct mgpu_device,
-                                           reset_work.work);
+                                            reset_work.work);
     int ret;
     
     dev_warn(mdev->dev, "GPU reset initiated\n");
@@ -53,7 +56,12 @@ static void mgpu_reset_work(struct work_struct *work)
     /* Re-enable interrupts */
     mgpu_irq_enable(mdev);
     
-    dev_info(mdev->dev, "GPU reset completed successfully\n");
+    /* Update reset counter and timestamp */
+    atomic_inc(&mdev->reset_count);
+    mdev->last_reset_time = ktime_get();
+    
+    dev_info(mdev->dev, "GPU reset completed successfully (count: %d)\n",
+             atomic_read(&mdev->reset_count));
     
 out:
     /* Clear reset flag */
@@ -67,12 +75,13 @@ out:
 int mgpu_reset_init(struct mgpu_device *mdev)
 {
     /* Initialize reset work */
-    INIT_DELAYED_WORK(&mdev->reset_work, mgpu_reset_work);
+    INIT_DELAYED_WORK(&mdev->reset_work, mgpu_reset_work_handler);
     
     /* Initialize reset state */
     atomic_set(&mdev->in_reset, 0);
     atomic_set(&mdev->reset_count, 0);
     init_waitqueue_head(&mdev->reset_wait);
+    mdev->last_reset_time = ktime_get();
     
     return 0;
 }
@@ -93,9 +102,6 @@ void mgpu_reset_schedule(struct mgpu_device *mdev)
         return;
     }
     
-    /* Increment reset counter */
-    atomic_inc(&mdev->reset_count);
-    
     /* Schedule reset work */
     schedule_delayed_work(&mdev->reset_work, 0);
 }
@@ -108,13 +114,17 @@ int mgpu_reset_hw(struct mgpu_device *mdev)
     
     dev_info(mdev->dev, "Performing hardware reset\n");
     
-    /* Save current state */
+    /* Save current control state */
     u32 old_control = mgpu_read(mdev, MGPU_REG_CONTROL);
+    
+    /* Disable GPU before reset */
+    mgpu_write(mdev, MGPU_REG_CONTROL, 0);
+    msleep(10);
     
     /* Assert reset */
     mgpu_write(mdev, MGPU_REG_CONTROL, MGPU_CTRL_RESET);
     
-    /* Hold reset for 100ms */
+    /* Hold reset for 100ms (ensure full reset) */
     msleep(100);
     
     /* Deassert reset */
@@ -124,13 +134,17 @@ int mgpu_reset_hw(struct mgpu_device *mdev)
     timeout = 1000;  /* 1 second timeout */
     while (timeout--) {
         status = mgpu_read(mdev, MGPU_REG_STATUS);
-        if (status & MGPU_STATUS_IDLE)
+        if (status & MGPU_STATUS_IDLE) {
+            dev_dbg(mdev->dev, "GPU came out of reset after %d ms\n",
+                    1000 - timeout);
             break;
+        }
         msleep(1);
     }
     
     if (timeout <= 0) {
-        dev_err(mdev->dev, "GPU failed to come out of reset\n");
+        dev_err(mdev->dev, "GPU failed to come out of reset (status=0x%08x)\n",
+                status);
         return -ETIMEDOUT;
     }
     
@@ -143,7 +157,20 @@ int mgpu_reset_hw(struct mgpu_device *mdev)
         return -EIO;
     }
     
-    dev_info(mdev->dev, "Hardware reset completed\n");
+    /* Clear any error conditions */
+    status = mgpu_read(mdev, MGPU_REG_STATUS);
+    if (status & (MGPU_STATUS_ERROR | MGPU_STATUS_HALTED)) {
+        /* Try to clear error/halt status */
+        mgpu_write(mdev, MGPU_REG_STATUS, 0);
+        
+        /* Verify cleared */
+        status = mgpu_read(mdev, MGPU_REG_STATUS);
+        if (status & (MGPU_STATUS_ERROR | MGPU_STATUS_HALTED)) {
+            dev_warn(mdev->dev, "Unable to clear error status after reset\n");
+        }
+    }
+    
+    dev_info(mdev->dev, "Hardware reset completed successfully\n");
     
     return 0;
 }
@@ -163,8 +190,8 @@ int mgpu_reset_wait(struct mgpu_device *mdev, unsigned long timeout_ms)
     int ret;
     
     ret = wait_event_interruptible_timeout(mdev->reset_wait,
-                                          !atomic_read(&mdev->in_reset),
-                                          msecs_to_jiffies(timeout_ms));
+                                           !atomic_read(&mdev->in_reset),
+                                           msecs_to_jiffies(timeout_ms));
     
     if (ret == 0)
         return -ETIMEDOUT;

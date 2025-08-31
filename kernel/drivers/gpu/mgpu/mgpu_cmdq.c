@@ -383,3 +383,131 @@ int mgpu_cmdq_resume(struct mgpu_device *mdev)
     
     return 0;
 }
+
+/* Stop command queue processing */
+int mgpu_cmdq_stop(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    unsigned long flags;
+    
+    if (!ring)
+        return 0;
+    
+    dev_dbg(mdev->dev, "Stopping command queue\n");
+    
+    spin_lock_irqsave(&mdev->cmd_lock, flags);
+    
+    /* Disable queue in hardware */
+    ring->enabled = false;
+    
+    /* Clear doorbell to stop processing */
+    mgpu_write(mdev, MGPU_REG_CMD_DOORBELL + (ring->queue_id * 0x10), 0);
+    
+    /* Save current state */
+    ring->last_head = mgpu_read(mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10));
+    
+    spin_unlock_irqrestore(&mdev->cmd_lock, flags);
+    
+    /* Wait for any pending commands to complete or timeout */
+    if (mgpu_core_wait_idle(mdev, 100) != 0) {
+        dev_warn(mdev->dev, "Timeout waiting for queue to stop\n");
+    }
+    
+    return 0;
+}
+EXPORT_SYMBOL_GPL(mgpu_cmdq_stop);
+
+/* Handle command queue interrupt */
+void mgpu_cmdq_irq_handler(struct mgpu_device *mdev)
+{
+    struct mgpu_ring *ring = mdev->cmd_ring;
+    u32 head, tail;
+    
+    if (!ring)
+        return;
+    
+    /* Read current head/tail */
+    head = mgpu_read(mdev, MGPU_REG_CMD_HEAD + (ring->queue_id * 0x10));
+    tail = mgpu_read(mdev, MGPU_REG_CMD_TAIL + (ring->queue_id * 0x10));
+    
+    /* Update statistics */
+    if (head != ring->last_head) {
+        ring->completed_cmds++;
+        ring->last_head = head;
+        ring->last_activity = jiffies;
+    }
+    
+    /* Wake any threads waiting for space */
+    if (head != tail) {
+        wake_up(&ring->wait_space);
+    }
+    
+    dev_dbg(mdev->dev, "Command queue IRQ: head=%u, tail=%u, completed=%llu\n",
+            head, tail, ring->completed_cmds);
+}
+
+/* Handle shader halt condition */
+void mgpu_shader_handle_halt(struct mgpu_device *mdev)
+{
+    struct mgpu_shader_mgr *mgr = mdev->shader_mgr;
+    u32 shader_ctrl, shader_pc;
+    u32 status;
+    
+    if (!mgr) {
+        dev_err(mdev->dev, "Shader halt with no shader manager\n");
+        return;
+    }
+    
+    /* Read shader state */
+    shader_ctrl = mgpu_read(mdev, MGPU_REG_SHADER_CTRL);
+    shader_pc = mgpu_read(mdev, MGPU_REG_SHADER_PC);
+    status = mgpu_read(mdev, MGPU_REG_STATUS);
+    
+    dev_err(mdev->dev, "Shader halt detected! PC=0x%08x, CTRL=0x%08x, STATUS=0x%08x\n",
+            shader_pc, shader_ctrl, status);
+    
+    /* Determine which shader halted */
+    u32 slot = (shader_ctrl >> 16) & 0xF;
+    
+    if (slot < 16 && mgr->slots[slot].loaded) {
+        const char *type_str = "Unknown";
+        switch (mgr->slots[slot].type) {
+        case MGPU_SHADER_VERTEX:
+            type_str = "Vertex";
+            break;
+        case MGPU_SHADER_FRAGMENT:
+            type_str = "Fragment";
+            break;
+        case MGPU_SHADER_COMPUTE:
+            type_str = "Compute";
+            break;
+        }
+        
+        dev_err(mdev->dev, "Halted shader: Slot %u (%s shader), Size %zu bytes\n",
+                slot, type_str, mgr->slots[slot].size);
+    }
+    
+    /* Capture GPU state for debugging */
+    mgpu_coredump_capture(mdev, "Shader halt");
+    
+    /* Try to recover */
+    if (status & MGPU_STATUS_HALTED) {
+        dev_info(mdev->dev, "Attempting to recover from shader halt\n");
+        
+        /* Clear halt condition */
+        mgpu_write(mdev, MGPU_REG_CONTROL, 
+                   mgpu_read(mdev, MGPU_REG_CONTROL) & ~MGPU_CTRL_SINGLE_STEP);
+        
+        /* Reset shader state */
+        mgpu_write(mdev, MGPU_REG_SHADER_PC, 0);
+        mgpu_write(mdev, MGPU_REG_SHADER_CTRL, 0);
+        
+        /* If recovery fails, schedule full reset */
+        msleep(10);
+        if (mgpu_read(mdev, MGPU_REG_STATUS) & MGPU_STATUS_HALTED) {
+            dev_err(mdev->dev, "Failed to recover from shader halt, scheduling reset\n");
+            mgpu_reset_schedule(mdev);
+        }
+    }
+}
+EXPORT_SYMBOL_GPL(mgpu_shader_handle_halt);

@@ -1,0 +1,1 @@
+savedcmd_mgpu.mod := printf '%s\n'   mgpu_drv.o mgpu_core.o mgpu_irq.o mgpu_dma.o mgpu_cmdq.o mgpu_fence.o mgpu_gem.o mgpu_uapi.o mgpu_debugfs.o mgpu_reset.o mgpu_pm.o mgpu_health.o | awk '!x[$$0]++ { print("./"$$0) }' > mgpu.mod
